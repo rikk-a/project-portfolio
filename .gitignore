@@ -4,3 +4,4 @@
 /plan.md
 /backend/instance/
 *.db
+/.env
