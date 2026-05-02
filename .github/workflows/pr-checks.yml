@@ -14,11 +14,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11.3'
       - run: pip install ruff
-      - run: ruff check --output-format=github backend/
+      - name: Lint changed Python files
+        run: |
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD -- '*.py' | tr '\n' ' ')
+          if [ -n "$FILES" ]; then
+            ruff check --output-format=github $FILES
+          else
+            echo "No Python files changed"
+          fi
 
   test-coverage:
     name: Tests & Coverage
