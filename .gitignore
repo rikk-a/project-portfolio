@@ -1,3 +1,6 @@
 /.python-version
 /CLAUDE.md
 .idea/
+/plan.md
+/backend/instance/
+*.db
