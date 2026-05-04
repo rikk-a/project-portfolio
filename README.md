@@ -95,7 +95,7 @@ pytest tests/
 ## Health check
 
 ```
-GET /health
+GET /api/health
 ```
 
 Returns `{ "status": "ok", "db": "ok" }`.
