@@ -10,6 +10,7 @@ def health():
     try:
         db.session.execute(db.text("SELECT 1"))
         db_status = "ok"
-    except Exception as e:
-        db_status = str(e)
-    return jsonify({"status": "ok", "db": db_status})
+    except Exception:
+        db_status = "error"
+    healthy = db_status == "ok"
+    return jsonify({"status": "ok" if healthy else "error", "db": db_status}), (200 if healthy else 503)

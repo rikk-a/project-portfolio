@@ -15,6 +15,9 @@ def create_app(config_class=Config):
     if not app.config.get("SQLALCHEMY_DATABASE_URI"):
         raise RuntimeError("DATABASE_URL environment variable is required")
 
+    if not app.config.get("API_KEY"):
+        app.logger.warning("API_KEY is not set — all requests will return 401")
+
     db.init_app(app)
 
     api = Api(app)

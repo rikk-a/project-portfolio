@@ -7,8 +7,16 @@ from sqlalchemy.dialects.postgresql import JSONB
 from api.schemas import ProjectPageSchema, ProjectQuerySchema, ProjectSchema
 from db.base import db
 from db.models.project import Project
+from db.session import session_scope
 
 blp = Blueprint("projects", __name__, description="CRUD operations for projects")
+
+_SORT_COLUMNS = {
+    "id": Project.id,
+    "name": Project.name,
+    "start_date": Project.start_date,
+    "end_date": Project.end_date,
+}
 
 
 # If that is internal service than token auth is ok, but It would probably
@@ -20,6 +28,10 @@ def check_auth():
         abort(401, message="Unauthorized")
 
 
+def _escape_like(value: str) -> str:
+    return value.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
 @blp.route("/projects")
 class ProjectList(MethodView):
     @blp.arguments(ProjectQuerySchema, location="query")
@@ -29,10 +41,11 @@ class ProjectList(MethodView):
         stmt = sa.select(Project)
 
         if args["search"]:
+            escaped = _escape_like(args["search"])
             stmt = stmt.where(
                 sa.or_(
-                    Project.name.ilike(f"%{args['search']}%"),
-                    Project.description.ilike(f"%{args['search']}%"),
+                    Project.name.ilike(f"%{escaped}%", escape="\\"),
+                    Project.description.ilike(f"%{escaped}%", escape="\\"),
                 )
             )
 
@@ -43,7 +56,7 @@ class ProjectList(MethodView):
                 )
             )
 
-        col = getattr(Project, args["sort_by"])
+        col = _SORT_COLUMNS[args["sort_by"]]
         stmt = stmt.order_by(col.desc() if args["order"] == "desc" else col.asc())
 
         pagination = db.paginate(
@@ -62,9 +75,9 @@ class ProjectList(MethodView):
     @blp.response(201, ProjectSchema)
     def post(self, data):
         """Create a new project"""
-        project = Project(**data)
-        db.session.add(project)
-        db.session.commit()
+        with session_scope() as session:
+            project = Project(**data)
+            session.add(project)
         return project
 
 
@@ -78,6 +91,6 @@ class ProjectDetail(MethodView):
     @blp.response(204)
     def delete(self, project_id):
         """Delete a project"""
-        project = db.get_or_404(Project, project_id)
-        db.session.delete(project)
-        db.session.commit()
+        with session_scope() as session:
+            project = db.get_or_404(Project, project_id)
+            session.delete(project)

@@ -4,7 +4,7 @@ import marshmallow as ma
 class ProjectSchema(ma.Schema):
     id = ma.fields.Int(dump_only=True)
     name = ma.fields.Str(required=True, validate=ma.validate.Length(min=3, max=255))
-    description = ma.fields.Str(allow_none=True)
+    description = ma.fields.Str(allow_none=True, validate=ma.validate.Length(max=5000))
     technologies = ma.fields.List(ma.fields.Str(), load_default=None, allow_none=True)
     start_date = ma.fields.Date(required=True)
     end_date = ma.fields.Date(load_default=None, allow_none=True)
