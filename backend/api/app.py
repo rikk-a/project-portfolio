@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, jsonify
+from flask import Flask
 from flask_smorest import Api
 
 from db.base import db
@@ -31,16 +31,10 @@ def create_app():
     api = Api(app)
 
     from api.projects import blp as projects_blp
-    api.register_blueprint(projects_blp, url_prefix="/api")
+    from api.health import blp as health
 
-    @app.get("/health")
-    def health():
-        try:
-            db.session.execute(db.text("SELECT 1"))
-            db_status = "ok"
-        except Exception as e:
-            db_status = str(e)
-        return jsonify({"status": "ok", "db": db_status})
+    api.register_blueprint(health, url_prefix="/api")
+    api.register_blueprint(projects_blp, url_prefix="/api")
 
     return app
 
