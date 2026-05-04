@@ -18,7 +18,7 @@ blp = Blueprint("projects", __name__, description="CRUD operations for projects"
 @blp.before_request
 def check_auth():
     api_key = os.environ.get("API_KEY")
-    if api_key and request.headers.get("Authorization") != f"Bearer {api_key}":
+    if not api_key or request.headers.get("Authorization") != f"Bearer {api_key}":
         abort(401, message="Unauthorized")
 
 
