@@ -3,8 +3,10 @@ import os
 from flask import Flask
 from flask_smorest import Api
 
-from db.base import db
+from api.health import blp as health
+from api.projects import blp as projects_blp
 from db import models as _models  # noqa: F401 — registers models with SQLAlchemy
+from db.base import db
 
 
 def create_app():
@@ -29,9 +31,6 @@ def create_app():
     db.init_app(app)
 
     api = Api(app)
-
-    from api.projects import blp as projects_blp
-    from api.health import blp as health
 
     api.register_blueprint(health, url_prefix="/api")
     api.register_blueprint(projects_blp, url_prefix="/api")
