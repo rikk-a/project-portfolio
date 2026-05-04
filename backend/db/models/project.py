@@ -1,5 +1,6 @@
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import Index
 from db.base import db
 
 
@@ -12,3 +13,7 @@ class Project(db.Model):
     technologies = db.Column(JSONB) #This field is jsonb for search purposes, but I would create a separate table
     start_date = db.Column(sa.Date, nullable=False)
     end_date = db.Column(sa.Date)
+
+    __table_args__ = (
+        Index("ix_projects_technologies_gin", "technologies", postgresql_using="gin"),
+    )
