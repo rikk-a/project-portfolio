@@ -1,13 +1,18 @@
-import pytest
+import os
 from datetime import date
+
+import pytest
 
 from api.app import create_app
 from db.base import db as _db
 from db.models.project import Project
 
+TEST_API_KEY = "test-api-key"
+
 
 @pytest.fixture(scope="session")
 def app():
+    os.environ["API_KEY"] = TEST_API_KEY
     app = create_app()
     app.config["TESTING"] = True
 
@@ -19,7 +24,9 @@ def app():
 
 @pytest.fixture()
 def client(app):
-    return app.test_client()
+    c = app.test_client()
+    c.environ_base["HTTP_AUTHORIZATION"] = f"Bearer {TEST_API_KEY}"
+    return c
 
 
 @pytest.fixture(autouse=True)

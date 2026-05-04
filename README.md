@@ -11,14 +11,6 @@ REST API for managing a developer project portfolio. Built with Flask + SQLAlche
 
 ## Getting started
 
-### Local
-
-```bash
-cd backend
-pip install -r requirements.txt
-flask --app api/app.py run
-```
-
 ### Docker
 
 ```bash
@@ -88,8 +80,7 @@ docker compose exec app python -m db.seed
 ## Tests
 
 ```bash
-cd backend
-pytest tests/
+ docker compose exec app pytest tests/ -v
 ```
 
 ## Health check
