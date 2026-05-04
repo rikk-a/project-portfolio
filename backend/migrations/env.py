@@ -1,9 +1,12 @@
 import os
 from logging.config import fileConfig
 
+from alembic import context
 from dotenv import load_dotenv
 from sqlalchemy import engine_from_config, pool
-from alembic import context
+
+from db import models as _models  # noqa: F401 — populate metadata
+from db.base import db
 
 load_dotenv()
 
@@ -12,9 +15,6 @@ config.set_main_option("sqlalchemy.url", os.environ["DATABASE_URL"])
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
-
-from db.base import db
-from db import models as _models  # noqa: F401 — populate metadata
 
 target_metadata = db.metadata
 
