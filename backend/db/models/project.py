@@ -1,6 +1,7 @@
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy import Index
+from sqlalchemy.dialects.postgresql import JSONB
+
 from db.base import db
 
 
