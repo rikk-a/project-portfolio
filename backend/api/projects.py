@@ -2,9 +2,9 @@ import os
 
 import sqlalchemy as sa
 from flask import request
-from sqlalchemy.dialects.postgresql import JSONB
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
+from sqlalchemy.dialects.postgresql import JSONB
 
 from api.schemas import ProjectPageSchema, ProjectQuerySchema, ProjectSchema
 from db.base import db

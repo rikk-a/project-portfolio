@@ -1,6 +1,7 @@
 import os
-import pytest
 from datetime import date
+
+import pytest
 
 from api.app import create_app
 from db.base import db as _db
