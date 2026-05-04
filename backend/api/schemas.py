@@ -3,11 +3,18 @@ import marshmallow as ma
 
 class ProjectSchema(ma.Schema):
     id = ma.fields.Int(dump_only=True)
-    name = ma.fields.Str(required=True, validate=ma.validate.Length(max=255))
+    name = ma.fields.Str(required=True, validate=ma.validate.Length(min=3, max=255))
     description = ma.fields.Str(allow_none=True)
     technologies = ma.fields.List(ma.fields.Str(), load_default=None, allow_none=True)
     start_date = ma.fields.Date(required=True)
     end_date = ma.fields.Date(load_default=None, allow_none=True)
+
+    @ma.validates_schema
+    def validate_dates(self, data, **kwargs):
+        start = data.get("start_date")
+        end = data.get("end_date")
+        if start and end and end <= start:
+            raise ma.ValidationError("end_date must be after start_date", "end_date")
 
 
 class ProjectQuerySchema(ma.Schema):
