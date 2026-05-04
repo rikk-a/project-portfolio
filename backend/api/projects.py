@@ -13,6 +13,8 @@ from db.models.project import Project
 blp = Blueprint("projects", __name__, description="CRUD operations for projects")
 
 
+# If that is internal service than token auth is ok, but It would probably
+# be used user/password auth with JWT in prod
 @blp.before_request
 def check_auth():
     api_key = os.environ.get("API_KEY")
