@@ -1,7 +1,5 @@
-import os
-
 import sqlalchemy as sa
-from flask import request
+from flask import current_app, request
 from flask.views import MethodView
 from flask_smorest import Blueprint, abort
 from sqlalchemy.dialects.postgresql import JSONB
@@ -17,7 +15,7 @@ blp = Blueprint("projects", __name__, description="CRUD operations for projects"
 # be used user/password auth with JWT in prod
 @blp.before_request
 def check_auth():
-    api_key = os.environ.get("API_KEY")
+    api_key = current_app.config.get("API_KEY")
     if not api_key or request.headers.get("Authorization") != f"Bearer {api_key}":
         abort(401, message="Unauthorized")
 

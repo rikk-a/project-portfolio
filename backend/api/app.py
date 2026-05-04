@@ -1,38 +1,23 @@
-import os
-
 from flask import Flask
 from flask_smorest import Api
 
 from api.health import blp as health
 from api.projects import blp as projects_blp
+from config import Config
 from db import models as _models  # noqa: F401 — registers models with SQLAlchemy
 from db.base import db
 
 
-def create_app():
+def create_app(config_class=Config):
     app = Flask(__name__)
-    db_url = os.environ.get("DATABASE_URL")
-    if not db_url:
+    app.config.from_object(config_class)
+
+    if not app.config.get("SQLALCHEMY_DATABASE_URI"):
         raise RuntimeError("DATABASE_URL environment variable is required")
-    app.config["SQLALCHEMY_DATABASE_URI"] = db_url
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["API_TITLE"] = "Project Portfolio API"
-    app.config["API_VERSION"] = "v1"
-    app.config["OPENAPI_VERSION"] = "3.0.3"
-    app.config["OPENAPI_URL_PREFIX"] = "/"
-    app.config["OPENAPI_SWAGGER_UI_PATH"] = "/docs"
-    app.config["OPENAPI_SWAGGER_UI_URL"] = "https://cdn.jsdelivr.net/npm/swagger-ui-dist/"
-    app.config["API_SPEC_OPTIONS"] = {
-        "components": {
-            "securitySchemes": {"BearerAuth": {"type": "http", "scheme": "bearer"}}
-        },
-        "security": [{"BearerAuth": []}],
-    }
 
     db.init_app(app)
 
     api = Api(app)
-
     api.register_blueprint(health, url_prefix="/api")
     api.register_blueprint(projects_blp, url_prefix="/api")
 
