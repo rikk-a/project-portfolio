@@ -18,3 +18,4 @@ class Project(db.Model):
     __table_args__ = (
         Index("ix_projects_technologies_gin", "technologies", postgresql_using="gin"),
     )
+
